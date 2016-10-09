@@ -1,0 +1,28 @@
+{
+  "name": "partymixer",
+  "version": "1.0.0",
+  "description": "Collaboratively edited playlists for your parties.",
+  "main": "index.js",
+  "scripts": {
+    "test": "semistandard",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bogdanghervan/partymixer.git"
+  },
+  "keywords": [
+    "party",
+    "playlist",
+    "collaborative"
+  ],
+  "author": "Bogdan Ghervan",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/bogdanghervan/partymixer/issues"
+  },
+  "homepage": "https://github.com/bogdanghervan/partymixer#readme",
+  "dependencies": {
+    "express": "^4.14.0"
+  }
+}
