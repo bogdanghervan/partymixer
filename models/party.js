@@ -14,7 +14,12 @@ module.exports = function(sequelize, DataTypes) {
         Party.hasMany(models.Song);
       },
       generateHash: function() {
-        var hash = require('crypto').randomBytes(12).toString('hex');
+        var hash = require('crypto').randomBytes(8)
+          .toString('base64')
+          .replace(/\//g,'_')
+          .replace(/\+/g,'-')
+          .replace(/=/g,'-');
+
         return hash;
       }
     },

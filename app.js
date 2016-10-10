@@ -19,7 +19,7 @@ var app = express();
 var passport = auth.initPassport();
 
 // view engine setup
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.engine('handlebars', exphbs({defaultLayout: 'static'}));
 app.set('view engine', 'handlebars');
 
 // uncomment after placing your favicon in /public

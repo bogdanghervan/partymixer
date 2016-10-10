@@ -3,6 +3,7 @@ var router = express.Router();
 var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
 var Party = require('../models').Party;
 var Song = require('../models').Song;
+var config = require('../config.js');
 
 /**
  * GET new party page
@@ -33,21 +34,44 @@ router.post('/',
   });
 
 /* GET party profile page */
-router.get('/:partyId',
+router.get('/:partyHash',
   ensureLoggedIn('/auth/facebook'),
   function(req, res) {
-    res.json(req.params);
+    var hash = req.param('partyHash');
+
+    Party.find({
+      where: { hash: hash }
+    }).then(function(party) {
+      if (party) {
+        res.render('parties/details', {
+          layout: 'realtime',
+          pusher: config.pusher,
+          user: req.user,
+          party: party
+        });
+      } else {
+        res.status(404).render('error', {
+          message: 'Party not found'
+        });
+      }
+    });
   });
 
 /* GET party playlist */
-router.get('/:partyId/songs',
+router.get('/:partyHash/songs',
   ensureLoggedIn('/auth/facebook'),
   function(req, res) {
-    res.send('respond with a resource');
+    var hash = req.param('partyHash');
+
+    Song.findAndCountAll({
+      attributes: ['youtubeVideoId', 'name']
+    }).then(function (songs) {
+      res.json(songs);
+    });
   });
 
 /* POST song to party playlist */
-router.post('/:partyId/songs',
+router.post('/:partyHash/songs',
   ensureLoggedIn('/auth/facebook'),
   function(req, res) {
     res.send('respond with a resource');

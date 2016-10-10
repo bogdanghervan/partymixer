@@ -1,0 +1,22 @@
+<section id="party" data-party-id="{{{party.hash}}}">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{{{party.name}}}</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Next songs</h2>
+            <table class="table playlist">
+            </table>
+        </div>
+    </div>
+</section>
+<script id="song-template" type="text/template">
+    <tr class="song">
+        <td class="song-name"></td>
+    </tr>
+</script>
+<script>
+    var party = Party($('#party'), pusher);
+</script>
