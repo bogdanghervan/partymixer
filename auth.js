@@ -6,27 +6,15 @@ var Strategy = require('passport-facebook').Strategy;
 
 var config = require('./config.js');
 
-  // TODO: delete this
-  // router.get('/login', function (req, res) {
-  //   res.send('login page');
-  // });
+router.get('/facebook', passport.authenticate('facebook'));
 
-  router.get('/facebook', passport.authenticate('facebook'));
-
-  // TODO: handle failure better
-  router.get('/facebook/callback', passport.authenticate('facebook', {
-      failureRedirect: '/error'
-    }),
-    function (req, res) {
-      res.redirect('/');
-    });
-
-  // TODO: delete this
-  // app.get('/profile',
-  //
-  //   function (req, res) {
-  //     res.json(req.user);
-  //   });
+// TODO: handle failure better
+router.get('/facebook/callback', passport.authenticate('facebook', {
+    failureRedirect: '/error'
+  }),
+  function (req, res) {
+    res.redirect('/');
+  });
 
 function initPassport () {
   passport.use(new Strategy({
