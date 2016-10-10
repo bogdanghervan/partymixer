@@ -1,18 +1,26 @@
 var express = require('express');
+var exphbs = require('express-handlebars');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
+var RedisStore = require('connect-redis')(session);
+var config = require('./config');
+var auth = require('./auth.js');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
+var parties = require('./routes/parties');
 
 var app = express();
 
+// setup authentication
+var passport = auth.initPassport();
+
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -21,9 +29,20 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  store: new RedisStore({
+    url: config.redisStore.url
+  }),
+  secret: config.redisStore.secret,
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
+app.use('/auth', auth.routes);
 app.use('/', routes);
-app.use('/users', users);
+app.use('/parties', parties);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
