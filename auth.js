@@ -4,7 +4,7 @@ var router = express.Router();
 var passport = require('passport');
 var Strategy = require('passport-facebook').Strategy;
 
-var config = require('./config.js');
+var config = require('./config');
 
 router.get('/facebook', passport.authenticate('facebook'));
 

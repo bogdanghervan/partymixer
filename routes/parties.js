@@ -3,7 +3,7 @@ var router = express.Router();
 var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
 var Party = require('../models').Party;
 var Song = require('../models').Song;
-var config = require('../config.js');
+var config = require('../config');
 
 /**
  * GET new party page
