@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
+var config = require('../config');
 var Party = require('../models').Party;
 var Song = require('../models').Song;
-var config = require('../config');
 
 /**
  * GET new party page
@@ -63,10 +63,19 @@ router.get('/:partyHash/songs',
   function(req, res) {
     var hash = req.param('partyHash');
 
-    Song.findAndCountAll({
-      attributes: ['youtubeVideoId', 'name']
-    }).then(function (songs) {
-      res.json(songs);
+    Party.findOne({
+      where: { hash: hash }
+    }).then(function(party) {
+      Song.findAndCountAll({
+        attributes: ['youtubeVideoId', 'name', 'order'],
+        where: { PartyId: party.id },
+        order: [
+          ['order', 'DESC'],
+          ['createdAt', 'ASC']
+        ]
+      }).then(function (songs) {
+        res.json(songs);
+      });
     });
   });
 

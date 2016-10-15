@@ -1,4 +1,6 @@
 var Party = function ($container, pusher) {
+
+  var self = this;
   var partyId = $container.data('party-id');
   var $playlist = $('.playlist', $container);
 
@@ -9,7 +11,7 @@ var Party = function ($container, pusher) {
     $song.find('.song-name').text(data.name);
     $song.attr('data-song-id', data.id);
 
-    $playlist.prepend($song);
+    $playlist.append($song);
   }
 
   function retrievePlaylist() {

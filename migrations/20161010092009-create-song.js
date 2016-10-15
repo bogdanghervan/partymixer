@@ -14,6 +14,10 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
+      order: {
+        type: Sequelize.INTEGER,
+        defaultValue: 1
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
