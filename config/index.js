@@ -28,11 +28,14 @@ config.youtube = {
 
 // Other configuration with sensible defaults for localhost
 config.database = {
-  username: process.env.DB_USERNAME || "partymixer",
-  password: process.env.DB_PASSWORD || "secret",
-  database: process.env.DB_DATABASE || "partymixer",
-  host: process.env.DB_HOST || "127.0.0.1",
-  dialect: "mysql"
+  username: process.env.DB_USERNAME || 'partymixer',
+  password: process.env.DB_PASSWORD || 'secret',
+  database: process.env.DB_DATABASE || 'partymixer',
+  host: process.env.DB_HOST || '127.0.0.1',
+  dialect: 'mysql',
+  dialectOptions: {
+    supportBigNumbers: true
+  }
 };
 
 config.redisStore = {
