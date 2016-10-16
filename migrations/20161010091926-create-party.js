@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       userFacebookId: {
-        type: Sequelize.BIGINT
+        type: Sequelize.BIGINT.UNSIGNED
       },
       currentSongId: {
         type: Sequelize.INTEGER

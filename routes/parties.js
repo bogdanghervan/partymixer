@@ -33,7 +33,7 @@ router.post('/',
     });
   });
 
-/* GET party profile page */
+/* GET party page */
 router.get('/:partyHash',
   ensureLoggedIn('/auth/facebook'),
   function(req, res) {
@@ -47,6 +47,7 @@ router.get('/:partyHash',
           layout: 'realtime',
           pusher: config.pusher,
           user: req.user,
+          isHost: (req.user.id == party.userFacebookId),
           party: party
         });
       } else {
@@ -66,10 +67,16 @@ router.get('/:partyHash/songs',
     Party.findOne({
       where: { hash: hash }
     }).then(function(party) {
-      Song.findAndCountAll({
-        attributes: ['youtubeVideoId', 'name', 'order'],
-        where: { PartyId: party.id },
+      Song.findAll({
+        attributes: ['youtubeVideoId', 'userFacebookId', 'name', 'status', 'order'],
+        where: {
+          PartyId: party.id,
+          status: {
+            $in: ['queued', 'playing', 'paused']
+          }
+        },
         order: [
+          ['status', 'DESC'],
           ['order', 'DESC'],
           ['createdAt', 'ASC']
         ]

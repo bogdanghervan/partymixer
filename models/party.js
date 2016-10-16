@@ -5,7 +5,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       unique: true
     },
-    userFacebookId: DataTypes.BIGINT,
+    userFacebookId: DataTypes.BIGINT.UNSIGNED,
     name: DataTypes.STRING,
     currentSongId: DataTypes.INTEGER
   }, {

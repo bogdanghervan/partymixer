@@ -1,22 +1,56 @@
 <section id="party" data-party-id="{{{party.hash}}}">
     <div class="row">
         <div class="col-md-12">
-            <h1>{{{party.name}}}</h1>
+            <h1 class="text-center">{{{party.name}}}</h1>
+        </div>
+    </div>
+    {{!-- only show player to party host --}}
+    {{#if isHost}}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="player">
+                <div class="video-canvas"></div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Set</h2>
+        </div>
+        <div class="col-md-6">
+
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
-            <h2>Next songs</h2>
-            <table class="table playlist">
-            </table>
+            <div class="panel panel-default">
+                <div class="panel-heading">9 tracks</div>
+                <ul class="list-group playlist"></ul>
+            </div>
         </div>
     </div>
 </section>
 <script id="song-template" type="text/template">
-    <tr class="song">
-        <td class="song-name"></td>
-    </tr>
+    <li href="#" class="list-group-item song clearfix">
+        <div class="song-name pull-left"></div>
+        <div class="pull-right">
+            <img src="" class="img-circle voter-picture">
+            <a href="#" title="Vote Up" aria-label="Vote Up">
+                <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+            </a>
+        </div>
+    </li>
 </script>
 <script>
-    var party = Party($('#party'), pusher);
+    var party = new Party($('#party'), pusher, {{{isHost}}});
+
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    function onYouTubeIframeAPIReady() {
+        party.initPlayer();
+    }
 </script>

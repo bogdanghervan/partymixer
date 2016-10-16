@@ -11,8 +11,16 @@ module.exports = {
       youtubeVideoId: {
         type: Sequelize.STRING
       },
+      userFacebookId: {
+        type: Sequelize.BIGINT.UNSIGNED
+      },
       name: {
         type: Sequelize.STRING
+      },
+      status: {
+        type: DataTypes.ENUM('queued', 'playing', 'paused', 'ended'),
+        defaultValue: 'queued',
+        allowNull: false
       },
       order: {
         type: Sequelize.INTEGER,
