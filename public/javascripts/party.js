@@ -59,11 +59,11 @@ var Party = function ($container, pusher, isHost) {
         // Pick next song and play it
         if (self.playlist.size()) {
           var song = self.playlist.front();
-          song.status = SongStatus.PLAYING;
 
           $.post('/parties/' + partyId + '/songs/current', {
             songId: song.id
           }).done(function () {
+            self.playlist.markAsBeingPlayed(song);
             self.player.play(song);
           });
         }

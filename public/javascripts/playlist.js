@@ -36,6 +36,16 @@ Playlist.prototype.size = function () {
   return this.songs.length;
 };
 
+Playlist.prototype.markAsBeingPlayed = function (targetSong) {
+  $.each(this.songs, function (key, song) {
+    if (song.id == targetSong.id) {
+      song.status = SongStatus.PLAYING;
+
+      $('[data-song-id=' + song.id + '] .playing').show();
+    }
+  });
+};
+
 /**
  * Adds songs en-masse to the playlist by repeatedly
  * calling {@link addSong}.
@@ -62,6 +72,9 @@ Playlist.prototype.addSong = function (song) {
   $song.find('.song-name').text(song.name);
   $song.find('.voter-picture').attr('src', this.userPictureUrl(song.userFacebookId));
   $song.attr('data-song-id', song.id);
+  if (song.status == SongStatus.PLAYING) {
+    $song.find('.playing').show();
+  }
 
   this.$container.append($song);
 };
