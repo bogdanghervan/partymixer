@@ -9,14 +9,22 @@ var Playlist = function ($container) {
 };
 
 /**
- * Returns the song at the beginning of the play queue,
- * and effectively removes it from the playlist.
+ * Returns the song at the beginning of the play queue.
  * @returns {Object}
+ */
+Playlist.prototype.front = function () {
+  return this.songs.length ? this.songs[0] : null;
+};
+
+/**
+ * Removes song at the beginning of the play queue.
  */
 Playlist.prototype.pop = function () {
   var slice = this.songs.splice(0, 1);
-
-  return slice.length ? slice[0] : null;
+  if (slice.length) {
+    var song = slice[0];
+    $('[data-song-id=' + song.id + ']').remove();
+  }
 };
 
 /**
@@ -43,17 +51,17 @@ Playlist.prototype.addSongs = function (songs) {
 
 /**
  * Adds a song to the playlist.
- * @param data
+ * @param {Object} song
  */
-Playlist.prototype.addSong = function (data) {
-  this.songs.push(data);
+Playlist.prototype.addSong = function (song) {
+  this.songs.push(song);
 
   var template = $('#song-template').text();
 
   var $song = $(template);
-  $song.find('.song-name').text(data.name);
-  $song.find('.voter-picture').attr('src', this.userPictureUrl(data.userFacebookId));
-  $song.attr('data-song-id', data.id);
+  $song.find('.song-name').text(song.name);
+  $song.find('.voter-picture').attr('src', this.userPictureUrl(song.userFacebookId));
+  $song.attr('data-song-id', song.id);
 
   this.$container.append($song);
 };
@@ -62,7 +70,7 @@ Playlist.prototype.addSong = function (data) {
  * Helper function that returns a Facebook user's profile picture URL
  * given its ID.
  * @param {String} facebookId
- * @returns {string}
+ * @returns {String}
  */
 Playlist.prototype.userPictureUrl = function (facebookId) {
   return 'https://graph.facebook.com/' + facebookId + '/picture?type=square';

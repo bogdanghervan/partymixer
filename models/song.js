@@ -17,9 +17,15 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
         Song.belongsTo(models.Party);
-      }
+      },
+      Status: {
+        QUEUED: 'queued',
+        PLAYING: 'playing',
+        PAUSED: 'paused',
+        ENDED: 'ended'
+      },
     },
-    tableName: 'songs'
+    tableName: 'songs',
   });
   return Song;
 };

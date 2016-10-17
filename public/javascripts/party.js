@@ -11,14 +11,14 @@ var Party = function ($container, pusher, isHost) {
 
   this.isHost = isHost;
   this.$container = $container;
-  this.player = new Player($('.player', this.$container));
+  this.player = new Player($('.player', this.$container), onPlayerStateChange);
   this.playlist = new Playlist($('.playlist', $container));
 
   // Init
   var channel = pusher.subscribe(partyId);
   channel.bind('pusher:subscription_succeeded', init);
   channel.bind('song-added', updatePlaylist);
-  // channel.bind('song-playing', updateCurrentSong);
+  // channel.bind('next-song', updateCurrentSong);
 
   function init() {
     $.get('/parties/' + partyId + '/songs').done(function (songs) {
@@ -42,6 +42,45 @@ var Party = function ($container, pusher, isHost) {
 
   function updatePlaylist(data) {
     self.playlist.addSong(data);
+  }
+
+  function onPlayerStateChange(newState) {
+    switch (newState) {
+      case Player.State.PAUSED:
+      case Player.State.PLAYING:
+        $.post('/parties/' + partyId + '/songs/current', {
+          status: stateToSongStatus(newState)
+        });
+        break;
+      case Player.State.ENDED:
+        // Remove current song from the playlist
+        self.playlist.pop();
+
+        // Pick next song and play it
+        if (self.playlist.size()) {
+          var song = self.playlist.front();
+          song.status = SongStatus.PLAYING;
+
+          $.post('/parties/' + partyId + '/songs/current', {
+            songId: song.id
+          }).done(function () {
+            self.player.play(song);
+          });
+        }
+
+        break;
+    }
+  }
+
+  function stateToSongStatus(state) {
+    switch (state) {
+      case Player.State.PLAYING:
+        return SongStatus.PLAYING;
+      case Player.State.ENDED:
+        return SongStatus.ENDED;
+      case Player.State.PAUSED:
+        return SongStatus.PAUSED;
+    }
   }
 };
 

@@ -3,11 +3,25 @@
  * @param {Object} $container
  * @constructor
  */
-var Player = function($container) {
+var Player = function($container, onStateChangeClbk) {
   this.$container = $container;
   this.isBuilt = false;
   this.playerInstance = null;
   this.queuedSong = null;
+  this.onStateChangeClbk = onStateChangeClbk;
+};
+
+/**
+ * This list represents the possible states of the YouTube player.
+ * This list is different than the list of possible song states
+ * {@link SongState}.
+ */
+Player.State = {
+  ENDED: 0,
+  PLAYING: 1,
+  PAUSED: 2,
+  BUFFERING: 3,
+  CUED: 5
 };
 
 /**
@@ -68,6 +82,11 @@ Player.prototype.build = function () {
 
         if (self.queuedSong) {
           self.load(self.queuedSong);
+        }
+      },
+      onStateChange: function (event) {
+        if ($.isFunction(self.onStateChangeClbk)) {
+          self.onStateChangeClbk(event.data);
         }
       }
     }

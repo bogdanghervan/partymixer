@@ -6,8 +6,7 @@ module.exports = function(sequelize, DataTypes) {
       unique: true
     },
     userFacebookId: DataTypes.BIGINT.UNSIGNED,
-    name: DataTypes.STRING,
-    currentSongId: DataTypes.INTEGER
+    name: DataTypes.STRING
   }, {
     classMethods: {
       associate: function(models) {
