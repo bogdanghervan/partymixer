@@ -1,7 +1,9 @@
 <section id="party" data-party-id="{{{party.hash}}}">
     <div class="row">
         <div class="col-md-12">
-            <h1 class="text-center">{{{party.name}}}</h1>
+            <div class="page-header">
+                <h1>{{{party.name}}}</h1>
+            </div>
         </div>
     </div>
     {{!-- only show player to party host --}}
@@ -24,15 +26,15 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">9 tracks</div>
-                <ul class="list-group playlist"></ul>
+            <div class="panel panel-default playlist">
+                <div class="panel-heading">0 songs</div>
+                <ul class="list-group"></ul>
             </div>
         </div>
     </div>
 </section>
 <script id="song-template" type="text/template">
-    <li href="#" class="list-group-item song clearfix">
+    <li class="list-group-item song clearfix">
         <div class="pull-left">
             <span class="song-name"></span>
             <img src="/images/playing.gif" class="playing" style="display: none;">

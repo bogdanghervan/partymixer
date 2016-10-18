@@ -5,6 +5,8 @@
  */
 var Playlist = function ($container) {
   this.$container = $container;
+  this.$heading = $('.panel-heading', $container);
+  this.$list = $('.list-group', $container);
   this.songs = [];
 };
 
@@ -24,6 +26,7 @@ Playlist.prototype.pop = function () {
   if (slice.length) {
     var song = slice[0];
     $('[data-song-id=' + song.id + ']').remove();
+    this.updateHeading();
   }
 };
 
@@ -44,6 +47,16 @@ Playlist.prototype.markAsBeingPlayed = function (targetSong) {
       $('[data-song-id=' + song.id + '] .playing').show();
     }
   });
+};
+
+/**
+ * Updates song count and other playlist information.
+ * @todo Add total song duration
+ */
+Playlist.prototype.updateHeading = function () {
+  var songCount = this.songs.length;
+
+  this.$heading.text(songCount + (songCount != 1 ? ' songs' : ' song'));
 };
 
 /**
@@ -76,7 +89,8 @@ Playlist.prototype.addSong = function (song) {
     $song.find('.playing').show();
   }
 
-  this.$container.append($song);
+  this.$list.append($song);
+  this.updateHeading();
 };
 
 /**
