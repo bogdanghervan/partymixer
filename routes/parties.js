@@ -46,7 +46,7 @@ router.get('/:partyHash',
     }).then(function (party) {
       if (party) {
         res.render('parties/details', {
-          layout: 'realtime',
+          layout: 'party',
           pusher: config.pusher,
           user: req.user,
           isHost: (req.user.id == party.userFacebookId),

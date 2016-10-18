@@ -12,6 +12,16 @@
     <link href="/stylesheets/style.css" rel="stylesheet">
 
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="//js.pusher.com/3.0/pusher.min.js"></script>
+    <script src="/javascripts/song-status.js"></script>
+    <script src="/javascripts/player.js"></script>
+    <script src="/javascripts/playlist.js"></script>
+    <script src="/javascripts/party.js"></script>
+    <script>
+        var pusher = new Pusher('{{{pusher.key}}}', {
+            cluster: '{{{pusher.cluster}}}'
+        });
+    </script>
 </head>
 
 <body>
@@ -22,6 +32,6 @@
     {{> footer}}
 </div>
 
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
 </html>
