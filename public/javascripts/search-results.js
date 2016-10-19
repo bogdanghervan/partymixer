@@ -3,13 +3,94 @@
  * @param {Object} $container
  * @constructor
  */
-var SearchResults = function ($container) {
-  this.$container = $container;
-  this.$summary = $('.summary', $container);
-  this.$list = $('.list', $container);
+var SearchResults = function ($container, partyId) {
+  var self = this;
 
-  this.resultTemplate = $('#result-template').text();
-  this.emptyTemplate = $('#empty-template').text();
+  self.$container = $container;
+  self.$summary = $('.summary', $container);
+  self.$list = $('.list', $container);
+  self.partyId = partyId;
+  self.results = [];
+
+  self.resultTemplate = $('#result-template').text();
+  self.emptyTemplate = $('#empty-template').text();
+
+  var messages = [
+      'Sweet!',
+      'Song added.',
+      'Cool!',
+      'Awesome!',
+      'Good pick!',
+      'Love it!',
+      'Roger that.'
+  ];
+
+  // Handle "Add to Queue" button now and for future elements
+  $(document).on('click', '.btn-enqueue', function () {
+    var resultId = $(this).parents('.media').data('index');
+
+    enqueue(resultId);
+  });
+
+  /**
+   * Adds YouTube video result to party queue.
+   * @param {number} resultId
+   */
+  function enqueue (resultId) {
+    var result = self.results.items[resultId];
+    if (!result) {
+      return;
+    }
+
+    $.post('/parties/' + self.partyId + '/songs', {
+      youtubeVideoId: result.id.videoId,
+      name: result.snippet.title
+    }).done(function () {
+      enqueueSuccessHandler(resultId);
+    }).error(function () {
+      enqueueErrorHandler(resultId);
+    });
+  }
+
+  /**
+   * Handles successful queueing of a video result.
+   * @param {number} resultId
+   */
+  function enqueueSuccessHandler (resultId) {
+    var $result = $('[data-index=' + resultId + ']');
+
+    $('.overlay-default', $result).remove();
+
+    var $successOverlay = $('.overlay-success', $result);
+    $('.message', $successOverlay).text(getRandomMessage());
+    $successOverlay.removeClass('hidden');
+
+    setTimeout(function() {
+      // TODO: make this nicer (maybe jQuery UI's "clip" effect?)
+      $result.hide('fast');
+    }, 2000);
+  }
+
+  /**
+   * Handles failure in queueing video results.
+   *
+   * @todo Allow nicer recovery from error in the future
+   * @param {number} resultId
+   */
+  function enqueueErrorHandler (resultId) {
+    var $result = $('[data-index=' + resultId + ']');
+    $('.overlay-default', $result).remove();
+    $('.overlay-danger', $result).removeClass('hidden');
+  }
+
+  /**
+   * Helper that returns a random happy success message.
+   * @returns {string}
+   */
+  function getRandomMessage () {
+    var random = Math.floor(Math.random() * messages.length);
+    return messages[random];
+  }
 };
 
 /**
@@ -18,6 +99,7 @@ var SearchResults = function ($container) {
 SearchResults.prototype.clear = function () {
   this.$summary.empty();
   this.$list.empty();
+  this.results = [];
 };
 
 /**
@@ -27,11 +109,17 @@ SearchResults.prototype.clear = function () {
 SearchResults.prototype.load = function (query, response) {
   var self = this;
 
+  // Clear internal storage and DOM
   self.clear();
+
+  // Update internal storage
+  self.results = response;
+
+  // Update DOM
   self.updateSummary(response.pageInfo);
   if (response.items.length) {
     $.each(response.items, function (key, data) {
-      self.addResult(data);
+      self.addResult(key, data);
     });
   } else {
     self.showEmptyResults(query);
@@ -56,7 +144,7 @@ SearchResults.prototype.updateSummary = function (info) {
  * Adds a line item to the search results.
  * @param {Object} data
  */
-SearchResults.prototype.addResult = function (data) {
+SearchResults.prototype.addResult = function (index, data) {
   var $result = $(this.resultTemplate);
 
   $result.find('.media-object')
@@ -65,7 +153,7 @@ SearchResults.prototype.addResult = function (data) {
   $result.find('.media-heading').text(data.snippet.title);
   $result.find('.channel').text(data.snippet.channelTitle);
   $result.find('.description').text(data.snippet.description);
-  $result.attr('data-video-id', data.id.videoId);
+  $result.attr('data-index', index);
 
   this.$list.append($result);
 };

@@ -10,13 +10,15 @@ Collaboratively edited playlists for your parties.
 * Implement logout
 * Stop playing animation when playback pauses (maybe use rubentd/gifplayer?)
 * Make routes less fat
+* Handle failure better
 
 ### Nice-to-have*s*
 
 * Show the total duration of the songs that are left in the play queue
 * Show how much a user has to wait until their song comes up
 * Vote songs up (use binary insertion sort to reposition the song in the playlist)
-* Pagination of YouTube search results
+* Pagination of YouTube search results (or "Load More")
+  * Automatically load more results when all 10 results have been added to the queue
 * Maybe use [Isotope](http://isotope.metafizzy.co/) to rearrange users based on their contribution to the party? 
 * Add ability to repeat already added songs once the end of the playlist is reached
 * Suggest some songs to kick off the party after it's created

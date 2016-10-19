@@ -87,7 +87,32 @@ router.get('/:partyHash/search',
 router.post('/:partyHash/songs',
   ensureLoggedIn('/auth/facebook'),
   function (req, res) {
-    res.send('respond with a resource');
+    var hash = req.params.partyHash;
+
+    findParty(hash).then(function (party) {
+      if (!party) {
+        return errorNotFound(res, 'Party not found');
+      }
+
+      var youtubeVideoId = req.body.youtubeVideoId;
+      var name = req.body.name;
+
+      return Song.create({
+        youtubeVideoId: youtubeVideoId,
+        userFacebookId: req.user.id,
+        name: name,
+        PartyId: party.id
+      });
+    }).then(function (song) {
+      res.status(201).json({
+        id: song.id,
+        youtubeVideoId: song.youtubeVideoId,
+        userFacebookId: song.userFacebookId,
+        name: song.name,
+        status: song.status,
+        order: song.order
+      })
+    });
   });
 
 /* TODO: create middleware for handling errors for API-like requests */
@@ -99,7 +124,7 @@ router.get('/:partyHash/songs',
 
     findParty(hash).then(function (party) {
       if (!party) {
-        errorNotFound(res, 'Party not found');
+        return errorNotFound(res, 'Party not found');
       }
       Song.findAll({
         attributes: ['id', 'youtubeVideoId', 'userFacebookId', 'name', 'status', 'order'],
@@ -205,7 +230,7 @@ router.post('/:partyHash/songs/current',
     });
   });
 
-function findParty (hash, callback) {
+function findParty (hash) {
   return Party.findOne({
     attributes: ['id'],
     where: {

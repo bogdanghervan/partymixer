@@ -13,7 +13,7 @@ var Search = function ($container, youtube) {
   self.isReady = false;
   self.$container = $container;
   self.$form = $('form', $container);
-  self.results = new SearchResults($('.results', $container));
+  self.results = new SearchResults($('.results', $container), partyId);
 
   $(document).on('youtube:loaded', function () {
     self.isReady = true;

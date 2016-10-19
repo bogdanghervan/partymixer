@@ -88,26 +88,54 @@ body {
   font-weight: bold;
 }
 
+/* Overlay over a video result in YouTube search results */
 .results .media {
   position: relative;
 }
-.results .media:hover .media-overlay {
-  opacity: 1;
-  transition: opacity .1s;
-}
-.results .media .media-overlay {
+/* Base overlay styles that all overlays inherit */
+.results .media .overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.85);
   display: inline-block;
   z-index: 999;
+}
+/* The default overlay houses the "Add to Queue" button */
+.results .media:hover .overlay-default {
+  opacity: 1;
+  transition: opacity .1s;
+}
+.results .media .overlay-default {
+  background-color: rgba(255, 255, 255, 0.85);
   opacity: 0;
   transition: opacity .1s;
 }
-.results .media .media-overlay button {
+.results .media .overlay-default button {
+  position: absolute;
+  margin: 0;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+}
+/* Overlay indicating success */
+.results .media .overlay-success {
+  /* @state-success-bg */
+  background-color: rgba(223, 240, 216, 0.85);
+  /* @state-success-text */
+  color: #3c763d;
+}
+/* Overlay indicating failure */
+.results .media .overlay-danger {
+  /* @state-danger-bg */
+  background-color: rgba(242, 222, 222, 0.85);
+  /* @state-danger-text */
+  color: #a94442;
+}
+.results .media .overlay-success .message,
+.results .media .overlay-danger .message {
   position: absolute;
   margin: 0;
   top: 50%;
