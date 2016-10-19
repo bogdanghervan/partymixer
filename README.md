@@ -22,6 +22,7 @@ Collaboratively edited playlists for your parties.
   * Automatically load more results when all 10 results have been added to the queue
 * Maybe use [Isotope](http://isotope.metafizzy.co/) to rearrange users based on their contribution to the party? 
 * Collapse extra participants when there are too many to fit on the screen
+  * And no longer display the current user if it's the only participant
 * Add ability to repeat already added songs once the end of the playlist is reached
 * Suggest some songs to kick off the party after it's created
   * either whatever is popular at the moment or based on the host's past parties (and guests' past parties, as they join)

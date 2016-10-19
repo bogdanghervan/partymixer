@@ -24,7 +24,7 @@ router.post('/auth', function (req, res) {
   var presenceData = {
     user_id: req.user.id,
     user_info: {
-      name: req.user.name
+      name: req.user.displayName
     }
   };
   var auth = pusher.authenticate(socketId, channel, presenceData);

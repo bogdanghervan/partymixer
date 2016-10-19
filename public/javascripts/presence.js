@@ -65,5 +65,6 @@ var Presence = function ($container, partyId, hostMemberId, pusher) {
     }
 
     $container.append($memberEl);
+    $('[data-id=' + member.id + '] img', $container).tooltip();
   }
 };
