@@ -12,7 +12,7 @@ body {
 }
 
 .navbar-brand,
-.navbar-nav li a {
+.navbar-nav > li > a {
   line-height: 66px;
   height: 66px;
   padding-top: 0;
