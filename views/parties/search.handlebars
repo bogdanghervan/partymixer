@@ -45,14 +45,22 @@
 <script id="result-template" type="text/template">
     <div class="media">
         <div class="media-left">
-            <a href="#">
-                <img class="media-object" src="" alt="">
-            </a>
+            <img class="media-object" src="" alt="">
         </div>
         <div class="media-body">
             <h4 class="media-heading"></h4>
             <p class="channel"></p>
-            <p class="description"></p>
+            <p class="description hidden-xs"></p>
+        </div>
+        <div class="media-right media-middle visible-xs visible-sm">
+            <button class="btn btn-default btn-lg btn-enqueue" aria-label="Add to Queue">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="media-overlay hidden-xs hidden-sm">
+            <button class="btn btn-default btn-enqueue" aria-label="Add to Queue">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add to Queue</span>
+            </button>
         </div>
     </div>
 </script>

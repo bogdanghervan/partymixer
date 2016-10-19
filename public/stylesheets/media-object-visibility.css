@@ -1,0 +1,37 @@
+/**
+ * Workaround for supporting `.visible-*` classes with `media-left`,
+ * `media-body` and `media-right` which use `display: table cell`
+ * internally.
+ *
+ * Partially inspired by {@link https://github.com/twbs/bootstrap/issues/5206}
+ * and by how Bootstrap v3 handles toggling of `<table>`-related elements with
+ * `.visible-*` classes.
+ */
+@media (max-width: 767px) {
+    .media-left.visible-xs,
+    .media-body.visible-xs,
+    .media-right.visible-xs {
+        display: table-cell !important;
+    }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+    .media-left.visible-sm,
+    .media-body.visible-sm,
+    .media-right.visible-sm {
+        display: table-cell !important;
+    }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+    .media-left.visible-md,
+    .media-body.visible-md,
+    .media-right.visible-md {
+        display: table-cell !important;
+    }
+}
+@media (min-width: 1200px) {
+    .media-left.visible-lg,
+    .media-body.visible-lg,
+    .media-right.visible-lg  {
+        display: table-cell !important;
+    }
+}
