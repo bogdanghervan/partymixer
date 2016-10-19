@@ -1,4 +1,6 @@
 'use strict';
+var _ = require('lodash');
+
 module.exports = function(sequelize, DataTypes) {
   var Song = sequelize.define('Song', {
     youtubeVideoId: DataTypes.STRING,
@@ -25,7 +27,13 @@ module.exports = function(sequelize, DataTypes) {
         ENDED: 'ended'
       },
     },
-    tableName: 'songs',
+    instanceMethods: {
+      getPublicData: function() {
+        return _.pick(this.dataValues,
+          ['id', 'youtubeVideoId', 'userFacebookId', 'name', 'status', 'order']);
+      }
+    },
+    tableName: 'songs'
   });
   return Song;
 };

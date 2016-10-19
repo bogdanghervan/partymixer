@@ -41,12 +41,20 @@ Playlist.prototype.size = function () {
   return this.songs.length;
 };
 
-Playlist.prototype.markAsBeingPlayed = function (targetSong) {
+/**
+ * Finds given song in the playlist and refreshes it (data and UI).
+ * @param {Object} updatedSong
+ */
+Playlist.prototype.refresh = function (updatedSong) {
   $.each(this.songs, function (key, song) {
-    if (song.id == targetSong.id) {
-      song.status = SongStatus.PLAYING;
+    if (song.id == updatedSong.id) {
+      // Refresh status and UI
+      song.status = updatedSong.status;
+      $('[data-song-id=' + song.id + '] .playing')
+        .toggleClass('hidden', song.status != SongStatus.PLAYING);
 
-      $('[data-song-id=' + song.id + '] .playing').show();
+      // Break loop
+      return false;
     }
   });
 };
@@ -86,7 +94,7 @@ Playlist.prototype.addSong = function (song) {
   $song.find('.voter-picture').attr('src', User.pictureUrl(song.userFacebookId));
   $song.attr('data-song-id', song.id);
   if (song.status == SongStatus.PLAYING) {
-    $song.find('.playing').show();
+    $song.find('.playing').removeClass('hidden');
   }
 
   this.$list.append($song);

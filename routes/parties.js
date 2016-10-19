@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var _ = require('lodash');
 var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
 var config = require('../config');
 var Party = require('../models').Party;
@@ -104,14 +105,17 @@ router.post('/:partyHash/songs',
         PartyId: party.id
       });
     }).then(function (song) {
-      res.status(201).json({
-        id: song.id,
-        youtubeVideoId: song.youtubeVideoId,
-        userFacebookId: song.userFacebookId,
-        name: song.name,
-        status: song.status,
-        order: song.order
-      })
+      if (!song) {
+        throw new Error('Song could not be queued');
+      }
+      var songData = song.getPublicData();
+      pusher.trigger(hash, 'song-added', songData);
+
+      return songData;
+    }).then(function (song) {
+      res.status(201).json(song);
+    }, function (error) {
+      errorGeneralError(res, error);
     });
   });
 
@@ -185,7 +189,7 @@ router.get('/:partyHash/songs/current',
  * or advance to the next song by posting the ID of the next song.
  */
 router.post('/:partyHash/songs/current',
-  // ensureLoggedIn('/auth/facebook'),
+  ensureLoggedIn('/auth/facebook'),
   function (req, res) {
     // TODO: validate input
     var hash = req.params.partyHash;
@@ -194,19 +198,17 @@ router.post('/:partyHash/songs/current',
       if (!party) {
         return errorNotFound(res, 'Party not found');
       }
+      var excludeSocketId = req.body.socketId;
 
       // Update status
       if ('status' in req.body) {
         // TODO: validate that status is either "playing" or "paused"
         var status = req.body.status;
-        console.log('Setting new status to ' + status);
         updateCurrentSongStatus(party, status).then(function (song) {
-          pusher.trigger(hash, 'song-status-change', {
-            status: song.status
-          });
-          res.json({
-            status: song.status
-          });
+          var payload = _.pick(song, ['id', 'status']);
+          pusher.trigger(hash, 'song-status-changed', payload, excludeSocketId);
+
+          res.json(song.getPublicData());
         }, function (error) {
           return errorGeneralError(res, error);
         });
@@ -214,13 +216,11 @@ router.post('/:partyHash/songs/current',
       // Advance to next song
       } else if ('songId' in req.body) {
         var newSongId = req.body.songId;
-        advanceSong(party, newSongId).then(function () {
-          pusher.trigger(hash, 'next-song', {
-            songId: newSongId
-          });
-          res.json({
-            id: newSongId
-          });
+        advanceSong(party, newSongId).then(function (song) {
+          var payload = _.pick(song, ['id', 'status']);
+          pusher.trigger(hash, 'next-song', payload, excludeSocketId);
+
+          res.json(song.getPublicData());
         }, function (error) {
           return errorGeneralError(res, error);
         });

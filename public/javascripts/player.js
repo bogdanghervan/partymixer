@@ -82,6 +82,7 @@ Player.prototype.build = function () {
 
         if (self.queuedSong) {
           self.load(self.queuedSong);
+          self.queuedSong = null;
         }
       },
       onStateChange: function (event) {

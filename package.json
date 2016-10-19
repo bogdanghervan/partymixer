@@ -33,6 +33,7 @@
     "express-handlebars": "^3.0.0",
     "express-session": "^1.14.1",
     "jade": "~1.11.0",
+    "lodash": "^4.16.4",
     "morgan": "~1.7.0",
     "mysql": "^2.11.1",
     "passport": "^0.3.2",

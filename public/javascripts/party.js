@@ -25,8 +25,9 @@ var Party = function ($container, pusher, isHost, hostMemberId) {
   // @see https://blog.pusher.com/how-to-add-message-history-to-your-pusher-apps/
   var channel = pusher.subscribe(self.partyId);
   channel.bind('pusher:subscription_succeeded', init);
-  channel.bind('song-added', updatePlaylist);
-  // channel.bind('next-song', updateCurrentSong);
+  channel.bind('song-added', handleSongAdd);
+  channel.bind('song-status-changed', handleSongPausedOrResumed);
+  channel.bind('next-song', handleNewSong);
 
   function init () {
     $.get('/parties/' + self.partyId + '/songs').done(function (songs) {
@@ -49,16 +50,65 @@ var Party = function ($container, pusher, isHost, hostMemberId) {
   }
 
   /**
-   * Adds song to playlist.
-   * @param {Object} data
+   * Handles Pusher event "song-added".
+   * OK to run on event triggerer's side.
+   * @param {Object} song
    */
-  function updatePlaylist (data) {
-    self.playlist.addSong(data);
+  function handleSongAdd (song) {
+    self.playlist.addSong(song);
+  }
+
+  /**
+   * Handles Pusher event "song-status-changed".
+   * NOT OK to run on event triggerer's side (would be redundant).
+   * @param {Object} song
+   */
+  function handleSongPausedOrResumed (song) {
+    self.playlist.refresh(song);
+  }
+
+  /**
+   * Handles a new song being played (on the guest's side).
+   * NOT OK to run on event triggerer's side (would produce
+   * conflicting results).
+   * @param {Object} song
+   */
+  function handleNewSong (song) {
+    // Remove current song from the playlist
+    self.playlist.pop();
+
+    self.playlist.refresh(song);
+  }
+
+  /**
+   * Advances party to next song. This means the song that just
+   * ended is removed from the playlist, and a new song is played
+   * (on the host's side).
+   */
+  function advanceToNextSong () {
+    // Remove current song from the playlist
+    self.playlist.pop();
+
+    // Pick next song and play it
+    if (self.playlist.size()) {
+      var song = self.playlist.front();
+
+      $.post('/parties/' + self.partyId + '/songs/current', {
+        socketId: pusher.connection.socket_id,
+        songId: song.id
+      }).done(function (currentSong) {
+        self.player.play(currentSong);
+
+        // Refresh UI for the song that's now playing
+        self.playlist.refresh(currentSong);
+      });
+    }
   }
 
   /**
    * Handler that is called upon player changing state
    * (e.g. the party host pauses or resumes playback).
+   * @todo use a JavaScript event instead?
    * @param {number} newState
    */
   function onPlayerStateChange (newState) {
@@ -66,25 +116,14 @@ var Party = function ($container, pusher, isHost, hostMemberId) {
       case Player.State.PAUSED:
       case Player.State.PLAYING:
         $.post('/parties/' + self.partyId + '/songs/current', {
+          socketId: pusher.connection.socket_id,
           status: stateToSongStatus(newState)
+        }, function (currentSong) {
+          self.playlist.refresh(currentSong);
         });
         break;
       case Player.State.ENDED:
-        // Remove current song from the playlist
-        self.playlist.pop();
-
-        // Pick next song and play it
-        if (self.playlist.size()) {
-          var song = self.playlist.front();
-
-          $.post('/parties/' + self.partyId + '/songs/current', {
-            songId: song.id
-          }).done(function () {
-            self.playlist.markAsBeingPlayed(song);
-            self.player.play(song);
-          });
-        }
-
+        advanceToNextSong();
         break;
     }
   }
