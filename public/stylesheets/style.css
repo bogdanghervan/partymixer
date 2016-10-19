@@ -79,3 +79,11 @@ body {
 .profile-picture {
   width: 36px;
 }
+
+.summary {
+  margin-bottom: 15px;
+}
+
+.empty-results .query {
+  font-weight: bold;
+}

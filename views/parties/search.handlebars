@@ -1,0 +1,66 @@
+<section id="search" data-party-id="{{{party.hash}}}">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="page-header">
+                <h1>{{{party.name}}} <small>Add Songs</small></h1>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form method="post" action="#">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" class="form-control query" placeholder="Search">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="results">
+                <div class="heading clearfix">
+                    <div class="summary small pull-right"></div>
+                </div>
+                <div class="list">
+                    <div class="well well-lg">
+                        Impress your friends with the latest and finest you've been listening to.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script id="empty-template" type="text/template">
+    <div class="well well-lg empty-results">
+        No results for <span class="query"></span>.
+    </div>
+</script>
+<script id="result-template" type="text/template">
+    <div class="media">
+        <div class="media-left">
+            <a href="#">
+                <img class="media-object" src="" alt="">
+            </a>
+        </div>
+        <div class="media-body">
+            <h4 class="media-heading"></h4>
+            <p class="channel"></p>
+            <p class="description"></p>
+        </div>
+    </div>
+</script>
+<script>
+    var youtube = new Youtube('{{{youtube.key}}}');
+    var search = new Search($('#search'), youtube);
+
+    function googleApiClientReady() {
+        youtube.init();
+    }
+</script>

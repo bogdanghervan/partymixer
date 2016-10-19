@@ -44,27 +44,57 @@ router.get('/:partyHash',
     Party.findOne({
       where: { hash: hash }
     }).then(function (party) {
-      if (party) {
-        res.render('parties/details', {
-          layout: 'party',
-          pusher: config.pusher,
-          user: req.user,
-          isHost: (req.user.id == party.userFacebookId),
-          party: party
-        });
-      } else {
-        res.status(404).render('error', {
-          message: 'Party not found'
-        });
+      if (!party) {
+        return pageNotFound(res, 'Party not found');
       }
+
+      res.render('parties/details', {
+        layout: 'party',
+        pusher: config.pusher,
+        youtube: config.youtube,
+        user: req.user,
+        isHost: (req.user.id == party.userFacebookId),
+        party: party
+      });
     });
+  });
+
+/* GET search page */
+router.get('/:partyHash/search',
+  ensureLoggedIn('/auth/facebook'),
+  function (req, res) {
+    var hash = req.params.partyHash;
+
+    Party.findOne({
+      where: { hash: hash }
+    }).then(function (party) {
+      if (!party) {
+        return pageNotFound(res, 'Party not found');
+      }
+
+      res.render('parties/search', {
+        layout: 'party',
+        pusher: config.pusher,
+        youtube: config.youtube,
+        user: req.user,
+        isHost: (req.user.id == party.userFacebookId),
+        party: party
+      });
+    });
+  });
+
+/* POST song to party playlist */
+router.post('/:partyHash/songs',
+  ensureLoggedIn('/auth/facebook'),
+  function (req, res) {
+    res.send('respond with a resource');
   });
 
 /* TODO: create middleware for handling errors for API-like requests */
 /* GET party playlist */
 router.get('/:partyHash/songs',
   ensureLoggedIn('/auth/facebook'),
-  function(req, res) {
+  function (req, res) {
     var hash = req.params.partyHash;
 
     findParty(hash).then(function (party) {
@@ -88,13 +118,6 @@ router.get('/:partyHash/songs',
         res.json(songs);
       });
     });
-  });
-
-/* POST song to party playlist */
-router.post('/:partyHash/songs',
-  ensureLoggedIn('/auth/facebook'),
-  function(req, res) {
-    res.send('respond with a resource');
   });
 
 /**
@@ -227,6 +250,12 @@ function advanceSong (party, newSongId) {
         return song.update({ status: Song.Status.PLAYING });
       });
     });
+}
+
+function pageNotFound (res, message) {
+  res.status(404).render('error', {
+    message: 'Party not found'
+  });
 }
 
 function errorNotFound (res, message) {

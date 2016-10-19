@@ -49,6 +49,8 @@
 </script>
 <script>
     var party = new Party($('#party'), pusher, {{{isHost}}});
+    var youtube = new Youtube('{{{youtube.key}}}');
+    var search = new Search($('#search'), youtube);
 
     var tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
@@ -57,5 +59,9 @@
 
     function onYouTubeIframeAPIReady() {
         party.initPlayer();
+    }
+
+    function googleApiClientReady() {
+        youtube.init();
     }
 </script>

@@ -16,10 +16,11 @@ Collaboratively edited playlists for your parties.
 * Show the total duration of the songs that are left in the play queue
 * Show how much a user has to wait until their song comes up
 * Vote songs up (use binary insertion sort to reposition the song in the playlist)
+* Pagination of YouTube search results
 * Maybe use [Isotope](http://isotope.metafizzy.co/) to rearrange users based on their contribution to the party? 
 * Add ability to repeat already added songs once the end of the playlist is reached
 * Suggest some songs to kick off the party after it's created
-  * either whatever is popular at the moment or based on the host's past parties (and guest's past parties, as they join)
+  * either whatever is popular at the moment or based on the host's past parties (and guests' past parties, as they join)
 * Always-working suggest feature (collaborative filtering)
   * maybe use YouTube's related videos search?
 * Implement authorization with YouTube (maybe use IonicaBizau/youtube-api?) and allow importing user's existing YouTube playlists 

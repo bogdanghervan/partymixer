@@ -7,6 +7,8 @@ var Playlist = function ($container) {
   this.$container = $container;
   this.$heading = $('.panel-heading', $container);
   this.$list = $('.list-group', $container);
+
+  this.template = $('#song-template').text();
   this.songs = [];
 };
 
@@ -79,9 +81,7 @@ Playlist.prototype.addSongs = function (songs) {
 Playlist.prototype.addSong = function (song) {
   this.songs.push(song);
 
-  var template = $('#song-template').text();
-
-  var $song = $(template);
+  var $song = $(this.template);
   $song.find('.song-name').text(song.name);
   $song.find('.voter-picture').attr('src', this.userPictureUrl(song.userFacebookId));
   $song.attr('data-song-id', song.id);
