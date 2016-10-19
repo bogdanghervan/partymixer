@@ -83,7 +83,7 @@ Playlist.prototype.addSong = function (song) {
 
   var $song = $(this.template);
   $song.find('.song-name').text(song.name);
-  $song.find('.voter-picture').attr('src', this.userPictureUrl(song.userFacebookId));
+  $song.find('.voter-picture').attr('src', User.pictureUrl(song.userFacebookId));
   $song.attr('data-song-id', song.id);
   if (song.status == SongStatus.PLAYING) {
     $song.find('.playing').show();
@@ -91,14 +91,4 @@ Playlist.prototype.addSong = function (song) {
 
   this.$list.append($song);
   this.updateHeading();
-};
-
-/**
- * Helper function that returns a Facebook user's profile picture URL
- * given its ID.
- * @param {String} facebookId
- * @returns {String}
- */
-Playlist.prototype.userPictureUrl = function (facebookId) {
-  return 'https://graph.facebook.com/' + facebookId + '/picture?type=square';
 };

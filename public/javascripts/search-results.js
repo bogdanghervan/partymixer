@@ -73,7 +73,6 @@ var SearchResults = function ($container, partyId) {
 
   /**
    * Handles failure in queueing video results.
-   *
    * @todo Allow nicer recovery from error in the future
    * @param {number} resultId
    */

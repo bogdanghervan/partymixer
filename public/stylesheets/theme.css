@@ -143,3 +143,17 @@ body {
   margin-right: -50%;
   transform: translate(-50%, -50%);
 }
+
+/* Live user presence */
+.presence {
+  margin: 20px 0 10px;
+}
+.presence li {
+  padding: 2px;
+}
+.presence img {
+  width: 36px;
+}
+.presence img.host {
+  border-bottom: 5px solid #CDDC39;
+}

@@ -12,6 +12,7 @@ var auth = require('./auth.js');
 
 var routes = require('./routes/index');
 var parties = require('./routes/parties');
+var pusher = require('./routes/pusher');
 
 var app = express();
 
@@ -40,9 +41,11 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// mount route handlers
 app.use('/auth', auth.routes);
 app.use('/', routes);
 app.use('/parties', parties);
+app.use('/pusher', pusher);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

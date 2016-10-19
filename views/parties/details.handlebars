@@ -1,8 +1,13 @@
 <section id="party" data-party-id="{{{party.hash}}}">
     <div class="row">
         <div class="col-md-12">
-            <div class="page-header">
-                <h1>{{{party.name}}}</h1>
+            <div class="row page-header">
+                <div class="col-sm-6 col-xs-12">
+                    <h1>{{{party.name}}}</h1>
+                </div>
+                <div class="col-sm-6 col-xs-12 clearfix">
+                    <ul class="list-inline presence pull-right"></ul>
+                </div>
             </div>
         </div>
     </div>
@@ -17,11 +22,8 @@
     </div>
     {{/if}}
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
             <h2>Set</h2>
-        </div>
-        <div class="col-md-6">
-
         </div>
     </div>
     <div class="row">
@@ -41,16 +43,19 @@
         </div>
         <div class="pull-right">
             <img src="" class="img-circle voter-picture">
-            <a href="#" title="Vote Up" aria-label="Vote Up">
-                <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
-            </a>
+            <!--<a href="#" title="Vote Up" aria-label="Vote Up">-->
+                <!--<span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>-->
+            <!--</a>-->
         </div>
     </li>
 </script>
+<script id="member-template" type="text/template">
+    <li>
+        <img class="img-rounded" src="" title="" data-toggle="tooltip" data-placement="top">
+    </li>
+</script>
 <script>
-    var party = new Party($('#party'), pusher, {{{isHost}}});
-    var youtube = new Youtube('{{{youtube.key}}}');
-    var search = new Search($('#search'), youtube);
+    var party = new Party($('#party'), pusher, {{{isHost}}}, '{{{party.userFacebookId}}}');
 
     var tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
@@ -59,9 +64,5 @@
 
     function onYouTubeIframeAPIReady() {
         party.initPlayer();
-    }
-
-    function googleApiClientReady() {
-        youtube.init();
     }
 </script>
