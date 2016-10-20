@@ -1,6 +1,6 @@
 var config = {};
 
-config.url = process.env.APP_URL || 'http://partymixer.local';
+config.url = process.env.APP_URL || 'http://partymixer.local:3000';
 config.port = process.env.PORT || '3000';
 
 // Sign up with Pusher for a key/secret pair at
@@ -17,7 +17,7 @@ config.pusher = {
 config.facebook = {
   appId: process.env.FACEBOOK_APP_ID,
   appSecret: process.env.FACEBOOK_APP_SECRET,
-  callbackUrl: (config.url + ':' + config.port + '/auth/facebook/callback')
+  callbackUrl: (config.url + '/auth/facebook/callback')
 };
 
 // You will need a YouTube browser key to access Data API v3
