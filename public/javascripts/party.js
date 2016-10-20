@@ -27,25 +27,30 @@ var Party = function ($container, pusher, isHost, hostMemberId) {
   channel.bind('pusher:subscription_succeeded', init);
   channel.bind('song-added', handleSongAdd);
   channel.bind('song-status-changed', handleSongPausedOrResumed);
-  channel.bind('next-song', handleNewSong);
+  channel.bind('next-song', handleNextSong);
 
   function init () {
     $.get('/parties/' + self.partyId + '/songs').done(function (songs) {
-      // Play or load current song (the song can either
-      // be in the "playing" status or in the "paused" status)
-      if (isHost) {
-        $.each(songs, function (key, song) {
-          if (song.status == SongStatus.PLAYING
-            || song.status == SongStatus.PAUSED) {
-            self.player.play(song);
-            // Break from the loop
-            return false;
-          }
-        });
-      }
-
-      // Load playlist
+      // Populate playlist
       self.playlist.addSongs(songs);
+
+      if (self.isHost) {
+        var song = self.playlist.front();
+        if (!song) {
+          return;
+        }
+
+        // Play or load current song (depending on the song being in
+        // the "playing" status or in the "paused" status, respectively)
+        if (song.status == SongStatus.PLAYING
+          || song.status == SongStatus.PAUSED) {
+          self.player.play(song);
+        // This party's just getting started - pick the first queued song
+        // and start playing it
+        } else if (song.status == SongStatus.QUEUED) {
+          updateCurrentSong(song);
+        }
+      }
     });
   }
 
@@ -71,13 +76,19 @@ var Party = function ($container, pusher, isHost, hostMemberId) {
    * Handles a new song being played (on the guest's side).
    * NOT OK to run on event triggerer's side (would produce
    * conflicting results).
-   * @param {Object} song
+   * @param {Object} nextSong
    */
-  function handleNewSong (song) {
-    // Remove current song from the playlist
-    self.playlist.pop();
+  function handleNextSong (nextSong) {
+    var firstSong = self.playlist.front();
 
-    self.playlist.refresh(song);
+    // Remove current song from the playlist, but not if that
+    // song is the one to be played (which is the case when
+    // it's first song every played in the party).
+    if (nextSong.id != firstSong.id) {
+      self.playlist.pop();
+    }
+
+    self.playlist.refresh(nextSong);
   }
 
   /**
@@ -92,17 +103,25 @@ var Party = function ($container, pusher, isHost, hostMemberId) {
     // Pick next song and play it
     if (self.playlist.size()) {
       var song = self.playlist.front();
-
-      $.post('/parties/' + self.partyId + '/songs/current', {
-        socketId: pusher.connection.socket_id,
-        songId: song.id
-      }).done(function (currentSong) {
-        self.player.play(currentSong);
-
-        // Refresh UI for the song that's now playing
-        self.playlist.refresh(currentSong);
-      });
+      updateCurrentSong(song);
     }
+  }
+
+  /**
+   * Promotes given song to current song and starts
+   * playing it immediately.
+   * @param {Object} song
+   */
+  function updateCurrentSong (song) {
+    $.post('/parties/' + self.partyId + '/songs/current', {
+      socketId: pusher.connection.socket_id,
+      songId: song.id
+    }).done(function (currentSong) {
+      self.player.play(currentSong);
+
+      // Refresh UI for the song that's now playing
+      self.playlist.refresh(currentSong);
+    });
   }
 
   /**

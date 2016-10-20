@@ -213,17 +213,23 @@ router.post('/:partyHash/songs/current',
           return errorGeneralError(res, error);
         });
 
-      // Advance to next song
+      // Advance to next song (or play first song)
       } else if ('songId' in req.body) {
         var newSongId = req.body.songId;
-        advanceSong(party, newSongId).then(function (song) {
-          var payload = _.pick(song, ['id', 'status']);
-          pusher.trigger(hash, 'next-song', payload, excludeSocketId);
 
-          res.json(song.getPublicData());
-        }, function (error) {
-          return errorGeneralError(res, error);
-        });
+        updateCurrentSongStatus(party, Song.Status.ENDED)  // if any
+          .catch(function () {})
+          .then(function () {
+            return advanceSong(party, newSongId);
+          })
+          .then(function (song) {
+            var payload = _.pick(song, ['id', 'status']);
+            pusher.trigger(hash, 'next-song', payload, excludeSocketId);
+
+            res.json(song.getPublicData());
+          }, function (error) {
+            return errorGeneralError(res, error);
+          });
       } else {
         return errorGeneralError(res, 'Bad request');
       }
@@ -258,23 +264,20 @@ function updateCurrentSongStatus (party, newStatus) {
 }
 
 function advanceSong (party, newSongId) {
-  return updateCurrentSongStatus(party, Song.Status.ENDED)
-    .then(function () {
-      return Song.findOne({
-        where: {
-          PartyId: party.id,
-          id: newSongId,
-          // A song can be advanced to only if it's
-          // in the "queued" status
-          status: Song.Status.QUEUED
-        }
-      }).then(function (song) {
-        if (!song) {
-          throw new Error('Cannot advance to song ' + newSongId);
-        }
-        return song.update({ status: Song.Status.PLAYING });
-      });
-    });
+  return Song.findOne({
+    where: {
+      PartyId: party.id,
+      id: newSongId,
+      // A song can be advanced to only if it's
+      // in the "queued" status
+      status: Song.Status.QUEUED
+    }
+  }).then(function (song) {
+    if (!song) {
+      throw new Error('Cannot advance to song ' + newSongId);
+    }
+    return song.update({ status: Song.Status.PLAYING });
+  });
 }
 
 function pageNotFound (res, message) {
