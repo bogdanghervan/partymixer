@@ -5,14 +5,18 @@ Collaboratively edited playlists for your parties.
 
 * ~~.env file~~
 * ~~Show users currently in the party using a Pusher presence channel for every party~~
-* browserify
+* Add "Search" button on party page
 * Add security middleware
 * Implement logout
 * Bug: Queue updates to the playlist UI so incoming songs are added in the right order
 (and after the playlist is initially populated)
 * Bug: when the host leaves party, correctly update the guests that nothing is playing
+* Recent parties page (so users could find their way back to the party when lost) 
+* Show a flash message for newly created parties inviting host to add some songs and how to invite quests
+* Subscribe to the party presence channel from the search page
 * Make routes less fat
 * Handle failure better
+* browserify
 
 ### Nice-to-have*s*
 
@@ -24,7 +28,8 @@ Collaboratively edited playlists for your parties.
   * Automatically load more results when all 10 results have been added to the queue
 * Collapse extra participants when there are too many to fit on the screen
   * And no longer display the current user if it's the only participant
-* Add ability to repeat already added songs once the end of the playlist is reached
+* Add repeat feature
+* Track playback progress to avoid starting from the beginning upon page refresh 
 * Suggest some songs to kick off the party after it's created
   * either whatever is popular at the moment or based on the host's past parties (and guests' past parties, as they join)
 * Always-working suggest feature (collaborative filtering)
