@@ -50,7 +50,7 @@ Playlist.prototype.refresh = function (updatedSong) {
     if (song.id == updatedSong.id) {
       // Refresh status and UI
       song.status = updatedSong.status;
-      $('[data-song-id=' + song.id + '] .playing')
+      $('[data-song-id=' + song.id + '] .animation')
         .toggleClass('hidden', song.status != SongStatus.PLAYING);
 
       // Break loop
@@ -94,7 +94,7 @@ Playlist.prototype.addSong = function (song) {
   $song.find('.voter-picture').attr('src', User.pictureUrl(song.userFacebookId));
   $song.attr('data-song-id', song.id);
   if (song.status == SongStatus.PLAYING) {
-    $song.find('.playing').removeClass('hidden');
+    $song.find('.animation').removeClass('hidden');
   }
 
   this.$list.append($song);
