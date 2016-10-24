@@ -1,5 +1,6 @@
 # PartyMixer specials
 .env
+config/config.json
 
 # JetBrains IDEs
 .idea

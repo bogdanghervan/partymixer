@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: function(queryInterface, Sequelize) {
-    return queryInterface.createTable('Songs', {
+    return queryInterface.createTable('songs', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -18,7 +18,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       status: {
-        type: DataTypes.ENUM('queued', 'playing', 'paused', 'ended'),
+        type: Sequelize.ENUM('queued', 'playing', 'paused', 'ended'),
         defaultValue: 'queued',
         allowNull: false
       },
@@ -37,6 +37,6 @@ module.exports = {
     });
   },
   down: function(queryInterface, Sequelize) {
-    return queryInterface.dropTable('Songs');
+    return queryInterface.dropTable('songs');
   }
 };
