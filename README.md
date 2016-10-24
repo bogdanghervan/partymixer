@@ -10,6 +10,8 @@ Collaboratively edited playlists for your parties.
 * Implement logout
 * Bug: Queue updates to the playlist UI so incoming songs are added in the right order
 (and after the playlist is initially populated)
+* Check that duplicate *queue* entries don't occur  
+* Retrieve messages missed during periods of network instability
 * Bug: when the host leaves party, correctly update the guests that nothing is playing
 * Recent parties page (so users could find their way back to the party when lost) 
 * Show a flash message for newly created parties inviting host to add some songs and how to invite quests

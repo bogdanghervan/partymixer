@@ -29,8 +29,10 @@ module.exports = function(sequelize, DataTypes) {
     },
     instanceMethods: {
       getPublicData: function() {
-        return _.pick(this.dataValues,
-          ['id', 'youtubeVideoId', 'userFacebookId', 'name', 'status', 'voteCount']);
+        return _.pick(this.dataValues, [
+          'id', 'youtubeVideoId', 'userFacebookId', 'name',
+          'status', 'voteCount', ['createdAt', 'queuedAt']
+        ]);
       }
     },
     tableName: 'songs'

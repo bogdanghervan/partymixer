@@ -22,7 +22,7 @@ var Party = function ($container, pusher, isHost, hostMemberId) {
   // but rather after subscribing to the party channel.
   // This is to ensure that no messages are missed between the HTML being sent
   // to the client and the subscription on the client taking place.
-  // @see https://blog.pusher.com/how-to-add-message-history-to-your-pusher-apps/
+  // @see https://support.pusher.com/hc/en-us/articles/212715068-How-do-I-implement-message-event-history-
   var channel = pusher.subscribe(self.partyId);
   channel.bind('pusher:subscription_succeeded', init);
   channel.bind('song-added', handleSongAdd);

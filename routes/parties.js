@@ -131,7 +131,10 @@ router.get('/:partyHash/songs',
         return errorNotFound(res, 'Party not found');
       }
       Song.findAll({
-        attributes: ['id', 'youtubeVideoId', 'userFacebookId', 'name', 'status', 'voteCount'],
+        attributes: [
+          'id', 'youtubeVideoId', 'userFacebookId', 'name',
+          'status', 'voteCount', ['createdAt', 'queuedAt']
+        ],
         where: {
           PartyId: party.id,
           status: {
@@ -165,7 +168,10 @@ router.get('/:partyHash/songs/current',
         return errorNotFound(res, 'Party not found');
       }
       Song.findOne({
-        attributes: ['id', 'youtubeVideoId', 'userFacebookId', 'name', 'status', 'voteCount'],
+        attributes: [
+          'id', 'youtubeVideoId', 'userFacebookId', 'name',
+          'status', 'voteCount', ['createdAt', 'queuedAt']
+        ],
         where: {
           PartyId: party.id,
           status: {
