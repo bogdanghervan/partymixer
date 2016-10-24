@@ -71,8 +71,8 @@
     </div>
 </script>
 <script>
-    var youtube = new Youtube('{{{youtube.key}}}');
-    var search = new Search($('#search'), youtube);
+    var youtube = new App.Youtube('{{{youtube.key}}}');
+    var search = new App.Search($('#search'), youtube);
 
     function googleApiClientReady() {
         youtube.init();

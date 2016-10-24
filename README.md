@@ -6,7 +6,6 @@ Collaboratively edited playlists for your parties.
 * ~~.env file~~
 * ~~Show users currently in the party using a Pusher presence channel for every party~~
 * Add "Search" button on party page
-* Add security middleware
 * Implement logout
 * Bug: Queue updates to the playlist UI so incoming songs are added in the right order
 (and after the playlist is initially populated)
@@ -18,7 +17,7 @@ Collaboratively edited playlists for your parties.
 * Subscribe to the party presence channel from the search page
 * Make routes less fat
 * Handle failure better
-* browserify
+* ~~browserify~~
 
 ### Nice-to-have*s*
 

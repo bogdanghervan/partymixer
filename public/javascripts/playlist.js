@@ -1,3 +1,6 @@
+var SongStatus = require('./song-status');
+var User = require('./user');
+
 /**
  * Represents a playlist.
  * @param {Object} $container
@@ -166,4 +169,6 @@ Playlist.prototype.lpad = function (input, targetLength, padString) {
     input = padString + input;
   }
   return input;
-}
+};
+
+module.exports = Playlist;

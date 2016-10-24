@@ -8,4 +8,6 @@ var User = {
   pictureUrl: function (facebookId) {
     return 'https://graph.facebook.com/' + facebookId + '/picture?type=square';
   }
-}
+};
+
+module.exports = User;

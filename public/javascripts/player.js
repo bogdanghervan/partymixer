@@ -1,3 +1,5 @@
+var SongStatus = require('./song-status');
+
 /**
  * Represents a player.
  * @param {Object} $container
@@ -93,3 +95,5 @@ Player.prototype.build = function () {
     }
   });
 };
+
+module.exports = Player;

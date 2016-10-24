@@ -1,3 +1,5 @@
+var SearchResults = require('./search-results');
+
 /**
  * Handles video search.
  * @param {Object} $container
@@ -34,3 +36,5 @@ var Search = function ($container, youtube) {
     return false;
   }
 };
+
+module.exports = Search;

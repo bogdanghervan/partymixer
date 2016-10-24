@@ -4,3 +4,5 @@ var SongStatus = {
   PAUSED: 'paused',
   ENDED: 'ended'
 };
+
+module.exports = SongStatus;

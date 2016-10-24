@@ -168,3 +168,5 @@ SearchResults.prototype.showEmptyResults = function (query) {
 
   this.$list.append($emptyEl);
 };
+
+module.exports = SearchResults;

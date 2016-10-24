@@ -1,3 +1,5 @@
+var User = require('./user');
+
 /**
  * Manages section showing live party participants.
  * @param {Object} $container
@@ -68,3 +70,5 @@ var Presence = function ($container, partyId, hostMemberId, pusher) {
     $('[data-id=' + member.id + '] img', $container).tooltip();
   }
 };
+
+module.exports = Presence;

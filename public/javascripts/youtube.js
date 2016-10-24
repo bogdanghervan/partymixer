@@ -46,3 +46,5 @@ Youtube.prototype.search = function (query, callback) {
     callback(response.result);
   });
 };
+
+module.exports = Youtube;

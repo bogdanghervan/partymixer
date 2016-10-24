@@ -1,3 +1,8 @@
+var Player = require('./player');
+var Playlist = require('./playlist');
+var Presence = require('./presence');
+var SongStatus = require('./song-status');
+
 /**
  * Manages the party and the communication inside it using Pusher.
  * @param {Object} $container
@@ -175,3 +180,5 @@ Party.prototype.initPlayer = function () {
 
   this.player.build();
 };
+
+module.exports = Party;
