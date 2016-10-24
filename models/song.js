@@ -11,7 +11,7 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: 'queued',
       allowNull: false
     },
-    order: {
+    voteCount: {
       type: DataTypes.INTEGER,
       defaultValue: 1
     }
@@ -30,7 +30,7 @@ module.exports = function(sequelize, DataTypes) {
     instanceMethods: {
       getPublicData: function() {
         return _.pick(this.dataValues,
-          ['id', 'youtubeVideoId', 'userFacebookId', 'name', 'status', 'order']);
+          ['id', 'youtubeVideoId', 'userFacebookId', 'name', 'status', 'voteCount']);
       }
     },
     tableName: 'songs'
