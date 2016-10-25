@@ -33,6 +33,7 @@ var Party = function ($container, pusher, isHost, hostMemberId) {
   channel.bind('song-added', handleSongAdd);
   channel.bind('song-status-changed', handleSongPausedOrResumed);
   channel.bind('next-song', handleNextSong);
+  channel.bind('song-voted', handleSongVote);
 
   function init () {
     $.get('/parties/' + self.partyId + '/songs').done(function (songs) {
@@ -66,6 +67,15 @@ var Party = function ($container, pusher, isHost, hostMemberId) {
    */
   function handleSongAdd (song) {
     self.playlist.addSong(song);
+  }
+
+  /**
+   * Handles Pusher event "song-voted".
+   * OK to run on event triggerer's side.
+   * @param {Object} updatedSong
+   */
+  function handleSongVote (updatedSong) {
+    self.playlist.refresh(updatedSong);
   }
 
   /**

@@ -5,6 +5,12 @@ Collaboratively edited playlists for your parties.
 
 * ~~.env file~~
 * ~~Show users currently in the party using a Pusher presence channel for every party~~
+* Voting mechanism:
+  * ~~API endpoint;~~
+  * ~~handle Pusher event in the UI;~~
+  * change the order of the songs immediately on the triggerrer (do not wait for Pusher);
+  * add the actual button for voting;
+  * persist the users who voted for each song, not just the number of votes and show them alongside each song in the queue.
 * Add "Search" button on party page
 * Implement logout
 * Bug: Queue updates to the playlist UI so incoming songs are added in the right order
@@ -21,7 +27,6 @@ Collaboratively edited playlists for your parties.
 
 ### Nice-to-have*s*
 
-* Vote songs up (use binary insertion sort to reposition the song in the playlist)
 * Monitor Pusher connection state and notify users when disconnected *Gmail*-style
 * Show the total duration of the songs that are left in the play queue
 * Show how much a user has to wait until their song comes up

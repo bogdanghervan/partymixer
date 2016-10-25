@@ -1,3 +1,4 @@
+var SortedList = require('./sorted-list');
 var SongStatus = require('./song-status');
 var User = require('./user');
 
@@ -9,7 +10,7 @@ var User = require('./user');
 var Playlist = function ($container) {
   this.$container = $container;
   this.$heading = $('.panel-heading', $container);
-  this.$list = $('.list-group', $container);
+  this.list = new SortedList($('.list-group', $container), 'sortable-hash');
 
   this.template = $('#song-template').text();
   this.songs = [];
@@ -47,6 +48,7 @@ Playlist.prototype.size = function () {
 /**
  * Finds given song in the playlist and refreshes it (data and UI).
  * @param {Object} updatedSong
+ * @fires Playlist#ui:datachange
  */
 Playlist.prototype.refresh = function (updatedSong) {
   var self = this;
@@ -55,13 +57,21 @@ Playlist.prototype.refresh = function (updatedSong) {
       var $songEl = $('[data-song-id=' + song.id + ']');
 
       // Refresh status and UI
-      song.status = updatedSong.status;
-      $('.animation', $songEl)
-        .toggleClass('hidden', song.status != SongStatus.PLAYING);
+      if ('status' in updatedSong) {
+        song.status = updatedSong.status;
+        $('.animation', $songEl)
+          .toggleClass('hidden', song.status != SongStatus.PLAYING);
+      }
+
+      if ('voteCount' in updatedSong) {
+        song.voteCount = updatedSong.voteCount;
+      }
 
       // Also refresh sortable hash
       song.sortableHash = self.makeSortableHash(song);
-      $songEl.attr('data-sortable-hash', song.sortableHash);
+      $songEl.attr('data-sortable-hash', song.sortableHash)
+        .data('sortable-hash', song.sortableHash)
+        .trigger('ui:datachange');
 
       // Break loop
       return false;
@@ -117,7 +127,7 @@ Playlist.prototype.addSong = function (song) {
     $song.find('.animation').removeClass('hidden');
   }
 
-  this.$list.append($song);
+  this.list.insert($song);
   this.updateHeading();
 };
 

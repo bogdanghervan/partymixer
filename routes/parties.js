@@ -3,6 +3,7 @@ var router = express.Router();
 var _ = require('lodash');
 var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
 var config = require('../config');
+var sequelize = require('../models').sequelize;
 var Party = require('../models').Party;
 var Song = require('../models').Song;
 var Pusher = require('pusher');
@@ -239,6 +240,51 @@ router.post('/:partyHash/songs/current',
       } else {
         return errorGeneralError(res, 'Bad request');
       }
+    });
+  });
+
+/**
+ * POST /parties/:partyHash/songs/:songId/votes
+ *
+ * Registers a vote for a song.
+ */
+router.post('/:partyHash/songs/:songId/votes',
+  ensureLoggedIn('/auth/facebook'),
+  function (req, res) {
+    // TODO: validate input
+    var hash = req.params.partyHash;
+    var songId = req.params.songId;
+
+    findParty(hash).then(function (party) {
+      if (!party) {
+        return errorNotFound(res, 'Party not found');
+      }
+
+      return sequelize.transaction(function (t) {
+        // Lock song to properly increment vote count
+        return Song.findOne({
+          attributes: ['id'],
+          where: {
+            id: songId,
+            PartyId: party.id
+          },
+          transaction: t,
+          lock: t.LOCK.UPDATE
+        }).then(function (song) {
+          if (!song) {
+            throw new Error('Song not found');
+          }
+          return song.increment('voteCount', { transaction: t });
+        });
+      }).then(function (song) {
+        return song.reload();
+      }).then(function (song) {
+        var songData = { id: songId, voteCount: song.voteCount };
+        pusher.trigger(hash, 'song-voted', songData);
+        return res.status(201).json(songData);
+      }).catch(function (err) {
+        return errorGeneralError(res, 'Vote could not be cast');
+      });
     });
   });
 

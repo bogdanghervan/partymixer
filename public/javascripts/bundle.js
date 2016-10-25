@@ -1,12 +1,20 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.App = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * Exports modules from bundle for public consumption as seen here:
+ * Modules that will be exposed for public (global) consumption under
+ * the App namespace when this command is run:
+ * ```
+ * browserify public/javascripts/exports.js --standalone App \
+ *   --outfile public/javascripts/bundle.js
+ * ```
+ *
+ * @see https://github.com/substack/browserify-handbook#standalone
+ * @see http://paulsalaets.com/posts/expose-node-module-as-global-variable
  */
 exports.Party = require('./party');
 exports.Youtube = require('./youtube');
 exports.Search = require('./search');
 
-},{"./party":2,"./search":7,"./youtube":10}],2:[function(require,module,exports){
+},{"./party":2,"./search":7,"./youtube":11}],2:[function(require,module,exports){
 var Player = require('./player');
 var Playlist = require('./playlist');
 var Presence = require('./presence');
@@ -42,6 +50,7 @@ var Party = function ($container, pusher, isHost, hostMemberId) {
   channel.bind('song-added', handleSongAdd);
   channel.bind('song-status-changed', handleSongPausedOrResumed);
   channel.bind('next-song', handleNextSong);
+  channel.bind('song-voted', handleSongVote);
 
   function init () {
     $.get('/parties/' + self.partyId + '/songs').done(function (songs) {
@@ -75,6 +84,15 @@ var Party = function ($container, pusher, isHost, hostMemberId) {
    */
   function handleSongAdd (song) {
     self.playlist.addSong(song);
+  }
+
+  /**
+   * Handles Pusher event "song-voted".
+   * OK to run on event triggerer's side.
+   * @param {Object} updatedSong
+   */
+  function handleSongVote (updatedSong) {
+    self.playlist.refresh(updatedSong);
   }
 
   /**
@@ -294,6 +312,7 @@ Player.prototype.build = function () {
 module.exports = Player;
 
 },{"./song-status":8}],4:[function(require,module,exports){
+var SortedList = require('./sorted-list');
 var SongStatus = require('./song-status');
 var User = require('./user');
 
@@ -305,7 +324,7 @@ var User = require('./user');
 var Playlist = function ($container) {
   this.$container = $container;
   this.$heading = $('.panel-heading', $container);
-  this.$list = $('.list-group', $container);
+  this.list = new SortedList($('.list-group', $container), 'sortable-hash');
 
   this.template = $('#song-template').text();
   this.songs = [];
@@ -343,6 +362,7 @@ Playlist.prototype.size = function () {
 /**
  * Finds given song in the playlist and refreshes it (data and UI).
  * @param {Object} updatedSong
+ * @fires Playlist#ui:datachange
  */
 Playlist.prototype.refresh = function (updatedSong) {
   var self = this;
@@ -351,13 +371,21 @@ Playlist.prototype.refresh = function (updatedSong) {
       var $songEl = $('[data-song-id=' + song.id + ']');
 
       // Refresh status and UI
-      song.status = updatedSong.status;
-      $('.animation', $songEl)
-        .toggleClass('hidden', song.status != SongStatus.PLAYING);
+      if ('status' in updatedSong) {
+        song.status = updatedSong.status;
+        $('.animation', $songEl)
+          .toggleClass('hidden', song.status != SongStatus.PLAYING);
+      }
+
+      if ('voteCount' in updatedSong) {
+        song.voteCount = updatedSong.voteCount;
+      }
 
       // Also refresh sortable hash
       song.sortableHash = self.makeSortableHash(song);
-      $songEl.attr('data-sortable-hash', song.sortableHash);
+      $songEl.attr('data-sortable-hash', song.sortableHash)
+        .data('sortable-hash', song.sortableHash)
+        .trigger('ui:datachange');
 
       // Break loop
       return false;
@@ -413,7 +441,7 @@ Playlist.prototype.addSong = function (song) {
     $song.find('.animation').removeClass('hidden');
   }
 
-  this.$list.append($song);
+  this.list.insert($song);
   this.updateHeading();
 };
 
@@ -469,7 +497,7 @@ Playlist.prototype.lpad = function (input, targetLength, padString) {
 
 module.exports = Playlist;
 
-},{"./song-status":8,"./user":9}],5:[function(require,module,exports){
+},{"./song-status":8,"./sorted-list":9,"./user":10}],5:[function(require,module,exports){
 var User = require('./user');
 
 /**
@@ -545,7 +573,7 @@ var Presence = function ($container, partyId, hostMemberId, pusher) {
 
 module.exports = Presence;
 
-},{"./user":9}],6:[function(require,module,exports){
+},{"./user":10}],6:[function(require,module,exports){
 /**
  * Controls the search results section.
  * @param {Object} $container
@@ -772,6 +800,62 @@ var SongStatus = {
 module.exports = SongStatus;
 
 },{}],9:[function(require,module,exports){
+/**
+ * UI element that keeps its children sorted given the name of a data attribute
+ * to use for comparison.
+ * @param {Object} $container
+ * @param {String} dataAttribute
+ * @listens event:ui:datachange
+ * @constructor
+ */
+var SortedList = function ($container, dataAttribute) {
+  var self = this;
+  self.$container = $container;
+  self.dataAttribute = dataAttribute;
+
+  $container.on('ui:datachange', function (e) {
+    var $element = $(e.target);
+    self.update($element);
+  })
+};
+
+/**
+ * Inserts element in the list so that values in the dataAttribute are in
+ * order. This can be viewed as an online insertion sort.
+ * @param {Object} $element
+ */
+SortedList.prototype.insert = function ($element) {
+  var $children = this.$container.children();
+
+  if ($children.length) {
+    this.update($element);
+
+    // Container is empty initially
+  } else {
+    this.$container.append($element);
+  }
+};
+
+/**
+ * Finds the right place to insert given element and either inserts it
+ * or moves it if already in the DOM.
+ * @param {Object} $element
+ */
+SortedList.prototype.update = function ($element) {
+  var $children = this.$container.children();
+
+  for (var i = $children.length - 1; i >= 0; i--) {
+    var child = $children.get(i);
+    if ($(child).data(this.dataAttribute) < $element.data(this.dataAttribute)) {
+      $element.insertAfter($(child));
+      break;
+    }
+  }
+};
+
+module.exports = SortedList;
+
+},{}],10:[function(require,module,exports){
 var User = {
   /**
    * Helper function that returns a user's profile picture URL
@@ -786,7 +870,7 @@ var User = {
 
 module.exports = User;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /**
  * YouTube Data API v3 wrapper.
  * @param {string} key
